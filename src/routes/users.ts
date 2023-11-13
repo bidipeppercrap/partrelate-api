@@ -12,10 +12,11 @@ router.get('/', (c) => {
 router.post('/', async (c) => {
     const db = buildDbClient(c)
     const body = await c.req.json()
+    const key = body.password
 
     const user = {
         username: body.username,
-        key: body.password
+        key
     }
 
     const returning = await db.insert(users).values(user).returning()
