@@ -4,12 +4,7 @@ import notFoundHandler from './routes/not-found'
 import index from './routes/index'
 import users from './routes/users'
 
-type Bindings = {
-    DB_URL: string,
-    DB_AUTH_TOKEN: string
-}
-
-const app = new Hono<{ Bindings: Bindings }>()
+const app = new Hono()
 
 app.route('/', index)
 app.route('/users', users)
