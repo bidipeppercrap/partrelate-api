@@ -1,9 +1,17 @@
 import { drizzle } from 'drizzle-orm/libsql'
 import { createClient } from '@libsql/client'
+import { Context, Env } from 'hono'
 
-const client = createClient({
-    url: 'libsql://127.0.0.1:8080',
-    authToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDA0Njk4OTcsImlhdCI6MTY5OTg2NTA5NywiaWQiOjM2NTd9.cp5JZjJ20J-5AFQqb7hgWYDNuuodX1SvF4NX_UTLCrA'
-})
+interface DbEnv {
+    TURSO_DB_AUTH_TOKEN?: string;
+    TURSO_DB_URL?: string;
+}
 
-export const db = drizzle(client)
+export function buildDbClient(context: Context<Env, '/', {}>) {
+    const c = (context.env as unknown as DbEnv)
+
+    return drizzle(createClient({
+        url: c.TURSO_DB_URL || 'http://127.0.0.1:8080',
+        authToken: c.TURSO_DB_AUTH_TOKEN
+    }))
+}
