@@ -9,16 +9,18 @@ import { keywordParams } from '../requests/keyword-params'
 const router = new Hono()
 
 router.get('/', async (c) => {
-    const words = keywordParams(c.req)
+    const { words } = keywordParams(c.req)
     const { page } = paginationParams(c.req)
     const pageLimit = 20
 
     const db = buildDbClient(c)
+    let whereQuery = db.select().from(vehicles)
 
-    const result = await db
-        .select()
-        .from(vehicles)
-        //.where(sql`${vehicles.name} like %${keyword}%`)
+    // words.forEach(word => {
+    //     whereQuery = whereQuery.where(sql`${vehicles.name} like ${sql.raw(`%${word}%`)}`)
+    // });
+
+    const result = await whereQuery
         .limit(pageLimit)
         .offset((page - 1) * pageLimit)
         .orderBy(vehicles.name)
