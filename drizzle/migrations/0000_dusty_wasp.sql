@@ -20,7 +20,8 @@ CREATE TABLE `vehicle_parts` (
 	`name` text NOT NULL,
 	`description` text,
 	`note` text,
-	`vehicle_id` integer NOT NULL
+	`vehicle_id` integer NOT NULL,
+	FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `vehicles` (
@@ -37,6 +38,6 @@ CREATE TABLE `users` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `part_name_idx` ON `parts` (`name`);--> statement-breakpoint
-CREATE UNIQUE INDEX `vehicle_part_name_idx` ON `vehicle_parts` (`name`);--> statement-breakpoint
+CREATE UNIQUE INDEX `vehicle_part_name_idx` ON `vehicle_parts` (`name`,`vehicle_id`);--> statement-breakpoint
 CREATE UNIQUE INDEX `vehicle_name_idx` ON `vehicles` (`name`);--> statement-breakpoint
 CREATE UNIQUE INDEX `user_username_idx` ON `users` (`username`);

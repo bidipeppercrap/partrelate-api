@@ -7,6 +7,7 @@ import { paginationParams } from '../requests/pagination-params'
 import { keywordParams } from '../requests/keyword-params'
 import { vehicleSchema } from '../schemas/vehicle'
 import { idParam } from '../requests/id-param'
+import { HTTPException } from 'hono/http-exception'
 
 const router = new Hono()
 
@@ -37,7 +38,25 @@ router.post('/', async (c) => {
 
     const returning = await db.insert(vehicles).values(vehicle).returning()
 
-    return c.text(returning[0].id.toString(), 200)
+    return c.json(returning)
+})
+
+router.get('/:id', async (c) => {
+    const { id } = idParam(c.req)
+    const db = buildDbClient(c)
+
+    const vehicle = await db.query.vehicles.findFirst({
+        with: {
+            vehicleParts: true
+        },
+        where: eq(vehicles.id, id)
+    })
+
+    if (!vehicle) throw new HTTPException(404, {
+        message: 'Vehicle not found'
+    })
+
+    return c.json(vehicle)
 })
 
 router.delete('/:id', async (c) => {
@@ -49,7 +68,9 @@ router.delete('/:id', async (c) => {
         .where(eq(vehicles.id, id))
         .returning()
     
-    return c.text(deletedVehicle[0].id.toString())
+    if (deletedVehicle.length < 1) throw new HTTPException(404, { message: 'Vehicle not found' })
+    
+    return c.json(deletedVehicle)
 })
 
 export default router

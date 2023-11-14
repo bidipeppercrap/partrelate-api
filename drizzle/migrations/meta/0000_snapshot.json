@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "5e592dde-4326-44f8-aa7f-ac7b194f8499",
+  "id": "15cb50ec-a2fa-4dec-af08-378b55234a39",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "parts_to_vehicle_parts": {
@@ -163,12 +163,27 @@
         "vehicle_part_name_idx": {
           "name": "vehicle_part_name_idx",
           "columns": [
-            "name"
+            "name",
+            "vehicle_id"
           ],
           "isUnique": true
         }
       },
-      "foreignKeys": {},
+      "foreignKeys": {
+        "vehicle_parts_vehicle_id_vehicles_id_fk": {
+          "name": "vehicle_parts_vehicle_id_vehicles_id_fk",
+          "tableFrom": "vehicle_parts",
+          "tableTo": "vehicles",
+          "columnsFrom": [
+            "vehicle_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
