@@ -21,6 +21,22 @@ router.post('/', async (c) => {
     return c.json(returning)
 })
 
+router.put('/:id', async (c) => {
+    const { id } = idParam(c.req)
+    const body = await c.req.json()
+    const partToVehiclePart = partToVehiclePartSchema.parse(body)
+
+    const db = buildDbClient(c)
+    const returning = await db.update(partsToVehicleParts)
+        .set(partToVehiclePart)
+        .where(eq(partsToVehicleParts.id, id))
+        .returning()
+    
+    if (returning.length < 1) throw new HTTPException(404, { message: 'Data not found' })
+
+    return c.json(returning)
+})
+
 router.delete('/:id', async (c) => {
     const { id } = idParam(c.req)
     const db = buildDbClient(c)
