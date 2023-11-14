@@ -1,7 +1,7 @@
 import { vehicles, vehiclesRelation } from './vehicles';
 import { vehicleParts, vehiclePartsRelation } from './vehicle_parts';
 import { parts, partsRelation } from './parts';
-import { partsToVehicleParts, partsToVehiclePartsRelation } from './part_to_vehicle_part';
+import { partsToVehicleParts, partsToVehiclePartsRelation } from './parts_to_vehicle_parts';
 
 export {
     vehicles,

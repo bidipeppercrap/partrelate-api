@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "15cb50ec-a2fa-4dec-af08-378b55234a39",
+  "id": "90d3d0ed-c35d-44d6-ad8d-b1dec051f163",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "parts_to_vehicle_parts": {
@@ -43,7 +43,17 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "part_to_vehicle_part_idx": {
+          "name": "part_to_vehicle_part_idx",
+          "columns": [
+            "vehicle_part_id",
+            "part_id",
+            "description"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {
         "parts_to_vehicle_parts_vehicle_part_id_vehicle_parts_id_fk": {
           "name": "parts_to_vehicle_parts_vehicle_part_id_vehicle_parts_id_fk",

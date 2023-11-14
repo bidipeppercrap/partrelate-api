@@ -1,6 +1,6 @@
 import { relations } from 'drizzle-orm'
 import { text, integer, sqliteTable, uniqueIndex } from 'drizzle-orm/sqlite-core'
-import { partsToVehicleParts } from './part_to_vehicle_part'
+import { partsToVehicleParts } from './parts_to_vehicle_parts'
 
 export const parts = sqliteTable('parts', {
     id: integer('id').primaryKey(),

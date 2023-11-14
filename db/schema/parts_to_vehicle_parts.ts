@@ -1,4 +1,4 @@
-import { integer, text, sqliteTable } from 'drizzle-orm/sqlite-core'
+import { integer, text, sqliteTable, uniqueIndex } from 'drizzle-orm/sqlite-core'
 import { vehicleParts } from './vehicle_parts'
 import { parts } from './parts'
 import { relations } from 'drizzle-orm'
@@ -9,7 +9,13 @@ export const partsToVehicleParts = sqliteTable('parts_to_vehicle_parts', {
     quantity: text('quantity'),
     vehiclePartId: integer('vehicle_part_id').notNull().references(() => vehicleParts.id),
     partId: integer('part_id').notNull().references(() => parts.id),
-})
+}, (partsToVehicleParts) => ({
+    partToVehiclePartIdx: uniqueIndex('part_to_vehicle_part_idx').on(
+        partsToVehicleParts.vehiclePartId,
+        partsToVehicleParts.partId,
+        partsToVehicleParts.description
+    )
+}))
 
 export const partsToVehiclePartsRelation = relations(partsToVehicleParts, ({ one }) => ({
     vehicleParts: one(vehicleParts, {

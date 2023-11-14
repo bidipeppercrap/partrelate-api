@@ -49,7 +49,15 @@ router.get('/:id', async (c) => {
 
     const vehicle = await db.query.vehicles.findFirst({
         with: {
-            vehicleParts: true
+            vehicleParts: {
+                with: {
+                    partsToVehicleParts: {
+                        with: {
+                            parts: true
+                        }
+                    }
+                }
+            }
         },
         where: eq(vehicles.id, id)
     })

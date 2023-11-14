@@ -37,6 +37,7 @@ CREATE TABLE `users` (
 	`key` text NOT NULL
 );
 --> statement-breakpoint
+CREATE UNIQUE INDEX `part_to_vehicle_part_idx` ON `parts_to_vehicle_parts` (`vehicle_part_id`,`part_id`,`description`);--> statement-breakpoint
 CREATE UNIQUE INDEX `part_name_idx` ON `parts` (`name`);--> statement-breakpoint
 CREATE UNIQUE INDEX `vehicle_part_name_idx` ON `vehicle_parts` (`name`,`vehicle_id`);--> statement-breakpoint
 CREATE UNIQUE INDEX `vehicle_name_idx` ON `vehicles` (`name`);--> statement-breakpoint
