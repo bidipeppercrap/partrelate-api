@@ -5,6 +5,7 @@ import { buildDbClient } from '../db'
 import { vehicles } from '../../db/schema/vehicles'
 import { paginationParams } from '../requests/pagination-params'
 import { keywordParams } from '../requests/keyword-params'
+import { vehicleSchema } from '../schemas/vehicle'
 
 const router = new Hono()
 
@@ -31,10 +32,7 @@ router.get('/', async (c) => {
 router.post('/', async (c) => {
     const db = buildDbClient(c)
     const body = await c.req.json()
-
-    const vehicle = {
-        name: body.name
-    }
+    const vehicle = vehicleSchema.parse(body)
 
     const returning = await db.insert(vehicles).values(vehicle).returning()
 
