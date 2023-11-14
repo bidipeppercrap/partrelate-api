@@ -8,8 +8,12 @@ import { vehiclePartSchema } from '../schemas/vehicle-part'
 import { idParam } from '../requests/id-param'
 import { HTTPException } from 'hono/http-exception'
 import { vehicles } from '../../db/schema/vehicles'
+import { jwtHandler } from '../auth'
+import { paginatedResponse } from '../responses/paginated'
 
 const router = new Hono()
+
+router.use('/*', jwtHandler)
 
 router.get('/', async (c) => {
     const { words } = keywordParams(c.req)
@@ -26,8 +30,10 @@ router.get('/', async (c) => {
         .limit(pageLimit)
         .offset((page - 1) * pageLimit)
         .orderBy(vehicleParts.name)
+    
+    const response = await paginatedResponse(c, vehicleParts, pageLimit, result)
 
-    return c.json(result)
+    return c.json(response)
 })
 
 router.post('/', async (c) => {

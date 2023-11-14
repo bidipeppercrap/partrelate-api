@@ -6,10 +6,14 @@ import { parts } from '../../db/schema/parts'
 import { keywordParams } from '../requests/keyword-params'
 import { paginationParams } from '../requests/pagination-params'
 import { idParam } from '../requests/id-param'
-import { SQL, and, eq, like } from 'drizzle-orm'
+import { SQL, and, eq, like, sql } from 'drizzle-orm'
 import { HTTPException } from 'hono/http-exception'
+import { jwtHandler } from '../auth'
+import { paginatedResponse } from '../responses/paginated'
 
 const router = new Hono()
+
+router.use('/*', jwtHandler)
 
 router.post('/', async (c) => {
     const db = buildDbClient(c)
@@ -40,7 +44,9 @@ router.get('/', async (c) => {
         .offset((page - 1) * pageLimit)
         .orderBy(parts.name)
     
-    return c.json(result)
+    const response = await paginatedResponse(c, parts, pageLimit, result)
+    
+    return c.json(response)
 })
 
 router.get('/:id', async (c) => {

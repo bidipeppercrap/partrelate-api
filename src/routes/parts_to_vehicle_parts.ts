@@ -5,8 +5,11 @@ import { partsToVehicleParts } from '../../db/schema/parts_to_vehicle_parts'
 import { idParam } from '../requests/id-param'
 import { eq } from 'drizzle-orm'
 import { HTTPException } from 'hono/http-exception'
+import { jwtHandler } from '../auth'
 
 const router = new Hono()
+
+router.use('/*', jwtHandler)
 
 router.post('/', async (c) => {
     const db = buildDbClient(c)

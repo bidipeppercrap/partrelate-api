@@ -2,8 +2,11 @@ import { Hono } from 'hono'
 
 import { buildDbClient } from '../db'
 import { users } from '../../db/schema/users'
+import { jwtHandler } from '../auth'
 
 const router = new Hono()
+
+router.use('/*', jwtHandler)
 
 router.get('/', (c) => {
     return c.text('List of users')
