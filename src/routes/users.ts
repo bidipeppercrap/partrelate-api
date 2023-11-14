@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import { buildDbClient } from '../db'
 import { users } from '../../db/schema/users'
 import { jwtHandler } from '../auth'
+import { pbkdf2 } from '../utils/auth'
 
 const router = new Hono()
 
@@ -15,15 +16,16 @@ router.get('/', (c) => {
 router.post('/', async (c) => {
     const db = buildDbClient(c)
     const body = await c.req.json()
-    const key = body.password
+    const key: string = await pbkdf2(body.password)
 
     const user = {
         username: body.username,
         key
     }
 
-    const returning = await db.insert(users).values(user).returning()
-    return c.text(returning[0].id.toString(), 200)
+    await db.insert(users).values(user)
+
+    return c.body(null, 204)
 })
 
 export default router;

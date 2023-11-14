@@ -3,8 +3,9 @@ import { sign } from 'hono/jwt'
 import { loginSchema } from '../schemas/login'
 import { buildDbClient } from '../db'
 import { users } from '../../db/schema/users'
-import { sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { HTTPException } from 'hono/http-exception'
+import { pbkdf2, pbkdf2Verify } from '../utils/auth'
 
 const router = new Hono()
 
@@ -22,11 +23,11 @@ router.post('/root', async (c) => {
     const body = await c.req.json()
     const credential = loginSchema.parse(body)
 
-    const key = credential.password // TO HASH
+    const key = await pbkdf2(credential.password) // TO HASH
 
     const user = {
         username: credential.username,
-        key: 'wtf'
+        key
     }
 
     await db.insert(users).values(user)
@@ -36,8 +37,22 @@ router.post('/root', async (c) => {
 
 router.post('/login', async (c) => {
     const body = await c.req.json()
-    const credential = loginSchema.omit({ password: true }).parse(body)
-    const token = await sign(credential, 'test')
+    const credential = loginSchema.parse(body)
+    const db = buildDbClient(c)
+
+    const user = await db.query.users.findFirst({
+        where: eq(users.username, credential.username)
+    })
+
+    if (!user) throw new HTTPException(404, { message: 'Username not found' })
+
+    const verified = await pbkdf2Verify(user.key, credential.password)
+
+    if (!verified) throw new HTTPException(400, { message: 'Incorrect password' })
+
+    const token = await sign({
+        sub: user.username
+    }, 'test')
 
     return c.text(token)
 })
