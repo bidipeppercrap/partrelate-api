@@ -6,6 +6,7 @@ import { vehicles } from '../../db/schema/vehicles'
 import { paginationParams } from '../requests/pagination-params'
 import { keywordParams } from '../requests/keyword-params'
 import { vehicleSchema } from '../schemas/vehicle'
+import { idParam } from '../requests/id-param'
 
 const router = new Hono()
 
@@ -40,7 +41,7 @@ router.post('/', async (c) => {
 })
 
 router.delete('/:id', async (c) => {
-    const id: number = parseInt(c.req.param('id'))
+    const { id } = idParam(c.req)
     const db = buildDbClient(c)
 
     const deletedVehicle = await db
