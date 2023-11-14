@@ -6,7 +6,7 @@ import { parts } from '../../db/schema/parts'
 import { keywordParams } from '../requests/keyword-params'
 import { paginationParams } from '../requests/pagination-params'
 import { idParam } from '../requests/id-param'
-import { eq } from 'drizzle-orm'
+import { SQL, and, eq, like } from 'drizzle-orm'
 import { HTTPException } from 'hono/http-exception'
 
 const router = new Hono()
@@ -27,10 +27,15 @@ router.get('/', async (c) => {
     const pageLimit = 20
     
     const db = buildDbClient(c)
+    const likeQueries: SQL<unknown>[] = words.map(word => like(parts.name, `%${word}%`))
 
-    let whereQuery = db.select().from(parts)
-
-    const result = await whereQuery
+    const result = await db
+        .select({
+            id: parts.id,
+            name: parts.name
+        })
+        .from(parts)
+        .where(and(...likeQueries))
         .limit(pageLimit)
         .offset((page - 1) * pageLimit)
         .orderBy(parts.name)
@@ -61,6 +66,8 @@ router.delete('/:id', async (c) => {
         .delete(parts)
         .where(eq(parts.id, id))
         .returning()
+    
+    if (!deletedPart) throw new HTTPException(404, { message: 'Part not found' })
     
     return c.json(deletedPart)
 })

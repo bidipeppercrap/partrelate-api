@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { eq, sql } from 'drizzle-orm'
+import { SQL, and, eq, like } from 'drizzle-orm'
 
 import { buildDbClient } from '../db'
 import { vehicles } from '../../db/schema/vehicles'
@@ -17,13 +17,15 @@ router.get('/', async (c) => {
     const pageLimit = 20
 
     const db = buildDbClient(c)
-    let whereQuery = db.select().from(vehicles)
+    const likeQueries: SQL<unknown>[] = words.map(word => like(vehicles.name, `%${word}%`))
 
-    // words.forEach(word => {
-    //     whereQuery = whereQuery.where(sql`${vehicles.name} like ${sql.raw(`%${word}%`)}`)
-    // });
-
-    const result = await whereQuery
+    const result = await db
+        .select({
+            id: vehicles.id,
+            name: vehicles.name
+        })
+        .from(vehicles)
+        .where(and(...likeQueries))
         .limit(pageLimit)
         .offset((page - 1) * pageLimit)
         .orderBy(vehicles.name)

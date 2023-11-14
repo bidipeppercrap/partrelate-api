@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import { keywordParams } from '../requests/keyword-params'
 import { paginationParams } from '../requests/pagination-params'
 import { buildDbClient } from '../db'
-import { eq, like } from 'drizzle-orm'
+import { SQL, and, eq, like } from 'drizzle-orm'
 import { vehicleParts } from '../../db/schema/vehicle_parts'
 import { vehiclePartSchema } from '../schemas/vehicle-part'
 import { idParam } from '../requests/id-param'
@@ -17,11 +17,12 @@ router.get('/', async (c) => {
     const pageLimit = 20
 
     const db = buildDbClient(c)
-    let whereQuery = db.select().from(vehicleParts)
+    const likeQueries: SQL<unknown>[] = words.map(word => like(vehicleParts.name, `%${word}%`))
 
-    whereQuery = whereQuery.where(like(vehicleParts.name, `%${words[0]}%`))
-
-    const result = await whereQuery
+    const result = await db
+        .select()
+        .from(vehicleParts)
+        .where(and(...likeQueries))
         .limit(pageLimit)
         .offset((page - 1) * pageLimit)
         .orderBy(vehicleParts.name)
@@ -66,6 +67,8 @@ router.delete('/:id', async (c) => {
         .delete(vehicleParts)
         .where(eq(vehicleParts.id, id))
         .returning()
+
+    if (deletedVehiclePart.length < 1) throw new HTTPException(404, { message: 'Vehicle Part not found' })
 
     return c.json(deletedVehiclePart)
 })
