@@ -1,0 +1,5 @@
+compatibility_date = "2023-10-30"
+
+[vars]
+DB_URL="libsql://partrelate-bidipeppercrap.turso.io"
+DB_AUTH_TOKEN="turso db tokens create partrelate"

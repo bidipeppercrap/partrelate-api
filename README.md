@@ -4,7 +4,7 @@ Made with Hono + Cloudflare Worker
 
 ## Config
 
-Fill `.env` and `wrangle.toml [vars]`:
+Fill `.env` and `wrangler.toml [vars]`:
 ```
 DB_URL
 DB_AUTH_TOKEN
