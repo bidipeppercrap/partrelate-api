@@ -31,7 +31,7 @@ router.get('/', async (c) => {
         .offset((page - 1) * pageLimit)
         .orderBy(vehicleParts.name)
     
-    const response = await paginatedResponse(c, vehicleParts, pageLimit, result)
+    const response = await paginatedResponse(c, vehicleParts, likeQueries, pageLimit, result)
 
     return c.json(response)
 })
