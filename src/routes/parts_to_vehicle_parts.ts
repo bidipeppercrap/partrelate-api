@@ -21,6 +21,19 @@ router.post('/', async (c) => {
     return c.json(returning)
 })
 
+router.get('/:id', async (c) => {
+    const { id } = idParam(c.req)
+    const db = buildDbClient(c)
+
+    const partToVehiclePart = await db.query.partsToVehicleParts.findFirst({
+        where: eq(partsToVehicleParts.id, id)
+    })
+
+    if (!partToVehiclePart) throw new HTTPException(404, { message: 'Assigned Part not found'})
+
+    return c.json(partToVehiclePart)
+})
+
 router.put('/:id', async (c) => {
     const { id } = idParam(c.req)
     const body = await c.req.json()
